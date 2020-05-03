@@ -1,4 +1,4 @@
-import { useEffect, useCallback, useState, FormEvent, ChangeEvent, SyntheticEvent } from 'react';
+import { useEffect, useCallback, useState, FormEvent, ChangeEvent } from 'react';
 
 
 export type ValueType = {
@@ -27,15 +27,18 @@ export type FormGroupType = {
 
 export const INIT_FIELD_VALUE: ValueType = { value: '', error: '' };
 
-const useForm = (formGroup: FormGroupType) => {
-    const [formState, setFormState] = useState({} as StateType);
+const useForm = (formGroup: FormGroupType, callback: Function) => {
+
+    const initFormState: StateType = {};
+    Object.keys(formGroup).forEach((key: string) => {
+        initFormState[key] = formGroup[key].state;
+    });
+
+    const [formState, setFormState] = useState(initFormState);
     const [invalid, setInvalid] = useState(true);
     const [isDirty, setIsDirty] = useState(false);
 
     useEffect(() => {
-        Object.keys(formGroup).forEach((key: string) => {
-            formState[key] = formGroup[key].state;
-        });
         setInvalid(true);
     }, []);
 
@@ -53,6 +56,14 @@ const useForm = (formGroup: FormGroupType) => {
 
     const handleOnClick = useCallback((event: FormEvent<HTMLInputElement>) => {
         updateState(event.currentTarget.name, event.currentTarget.checked);
+    }, [formGroup]);
+
+    const handleOnSubmit = useCallback((event: FormEvent) => {
+        event.preventDefault();
+        if (!invalid) {
+            callback();
+            resetForm();
+        }
     }, [formGroup]);
 
     const updateState = (name: string, value: any) => {
@@ -78,17 +89,21 @@ const useForm = (formGroup: FormGroupType) => {
 
     const validateForm = useCallback(
         () => {
-            console.log(formState);
             const isInvalidState = Object.keys(formState).some((key: string) => {
                 const isRequiredField = formGroup[key].validations.required;
                 const fieldState: ValueType = formState[key];
-                console.log(key, isRequiredField, fieldState.value, fieldState.error);
                 return (isRequiredField && !fieldState.value) || (fieldState.error !== '');
             });
             return isInvalidState
         }, [formState, formGroup]);
 
-    return { formState, invalid, handleOnChange, handleOnClick }
+    const resetForm = () => {
+        setFormState(initFormState);
+        setInvalid(true);
+        setIsDirty(false);
+    }
+
+    return { formState, invalid, handleOnChange, handleOnClick, handleOnSubmit }
 }
 
 export default useForm;
