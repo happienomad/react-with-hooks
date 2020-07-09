@@ -1,4 +1,4 @@
-import React, { useCallback, FormEvent, useEffect, useState } from 'react';
+import React, { useCallback } from 'react';
 import useForm, { FormGroupType, INIT_FIELD_VALUE } from '../hooks/useForm';
 
 const Form: React.FC = () => {
@@ -23,7 +23,7 @@ const Form: React.FC = () => {
     const { formState, invalid, handleOnChange, handleOnClick, handleOnSubmit } = useForm(formGroup, submitCallback);
 
     const hasError = useCallback((name: string) => {
-        return formState[name] ? formState[name]?.error != '' : false;
+        return formState[name] ? formState[name]?.error !== '' : false;
     }, [formState]);
 
     return (

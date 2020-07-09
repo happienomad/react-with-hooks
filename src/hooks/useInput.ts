@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React from 'react';
 
 const useInput = (initialValue: any = undefined) => {
     const [value, setValue] = React.useState(initialValue);

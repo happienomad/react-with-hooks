@@ -21,15 +21,14 @@ const MealsList: React.FC<MealsListProps> = (props: MealsListProps) => {
     let selectedCuisine: string = useSelector(ActiveCuisineSelector);
     let mealsList: MealItem[] = useSelector(MealsListByCuisineSelector(selectedCuisine));
     const cuisines: string[] = ['Canadian', 'Indian', 'Italian', 'French'];
-    const isSelected = (cuisine: string): boolean => selectedCuisine === cuisine;
 
     return (
         <>
             <div>
                 <label htmlFor="business">Select Cuisine:
-                <select className="form-control" id="business" name="business" onChange={updateCuisine}>
+                <select className="form-control" id="business" name="business" value={selectedCuisine} onChange={updateCuisine}>
                         <option value="">Select</option>
-                        {cuisines.map(cuisine => <option selected={isSelected(cuisine)} value={cuisine}>{cuisine}</option>)}
+                        {cuisines.map(cuisine => <option key={cuisine} value={cuisine}>{cuisine}</option>)}
                     </select>
                 </label>
             </div>
